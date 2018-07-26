@@ -7,11 +7,6 @@
 <body>
 
 
-<!-- <div id="log"></div>
-<form id="form">
-    <input type="submit" value="Send" />
-    <input type="text" id="msg" size="64"/>
-</form> -->
 <div id="phaser-example">
   <script >
   var conn;
@@ -31,6 +26,12 @@
                   console.dir(messages[i]);
                   var curr = JSON.parse(messages[i]);
                   console.dir(curr);
+                    for(var ting in curr)
+                    {
+
+                      drawPlayerMark(curr[ting].X, curr[ting].Y);
+                    }
+
               }
           };
       } else {
@@ -61,7 +62,8 @@ var config = {
     scene: {
         preload: preload,
         create: create,
-        update: update
+        update: update,
+        drawPlayerMark: drawPlayerMark
     }
 };
 //{"name":"","type":"Sprite","x":214.66666666666654,"y":512,"depth":0,"scale":{"x":1,"y":1},"origin":{"x":0.5,"y":0.5},"flipX":false,"flipY":false,"rotation":0,"alpha":1,"visible":true,"scaleMode":0,"blendMode":0,"textureKey":"dude","frameKey":4,"data":{}}
@@ -84,6 +86,8 @@ var score = 0;
 var gameOver = false;
 var scoreText;
 
+var graphics;
+
 var game = new Phaser.Game(config);
 
 function preload ()
@@ -100,6 +104,7 @@ function create ()
     //  A simple background for our game
     this.add.image(400, 300, 'sky');
 
+    graphics = this.add.graphics(0, 0);
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = this.physics.add.staticGroup();
 
@@ -208,6 +213,13 @@ function update ()
         console.dir(mm);
         conn.send(mm);
     }
+}
+
+function drawPlayerMark (x,y)
+{
+  console.log("x: ", x, " y: ", y);
+  graphics.fillStyle(0xFFFFFF, 1.0);
+  graphics.fillRect(x, y, 16, 16);
 }
 
 function collectStar (player, star)

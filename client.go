@@ -52,7 +52,9 @@ type Players struct {
 	Players []Plyr
 }
 
-var plyrs = new(Players)
+var plyrs map[string]Plyr
+
+// var plyrs = new(Players)
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
@@ -73,6 +75,7 @@ type Client struct {
 func (c *Client) readPump() {
 	defer func() {
 		c.hub.unregister <- c
+		delete(plyrs, c.conn.RemoteAddr().String())
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -90,7 +93,7 @@ func (c *Client) readPump() {
 	m.Address = c.conn.RemoteAddr().String()
 
 	// append works on nil slices.
-	plyrs.Players = append(plyrs.Players, m)
+	plyrs[m.Address] = m
 	// b, err := json.Marshal(m)
 
 	for {
@@ -108,11 +111,17 @@ func (c *Client) readPump() {
 		//this is where we shall do the calculations we wantto do server side.
 		address := c.conn.RemoteAddr().String()
 		println(address)
+
+		mm := plyrs[address]
+		mm.X = m.X
+		mm.Y = m.Y
+		plyrs[address] = mm
+
 		b, err := json.Marshal(plyrs)
 		println(string(b))
 		if err != nil {
-			c.hub.broadcast <- string(b)
 		}
+		c.hub.broadcast <- string(b)
 	}
 }
 
