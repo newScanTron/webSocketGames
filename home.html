@@ -9,27 +9,62 @@
 
 <div id="phaser-example">
   <script >
+  var remoteAddress;
   var conn;
+  var others;
+    var myMap;
   window.onload = function () {
       //var conn;
 
       if (window["WebSocket"]) {
           conn = new WebSocket("ws://" + document.location.host + "/ws");
+          console.log(conn.url);
+          console.dir(conn);
           conn.onclose = function (evt) {
               var item = document.createElement("div");
               item.innerHTML = "<b>Connection closed.</b>";
 
           };
+          conn.onopen = function(evt) {
+
+
+          };
           conn.onmessage = function (evt) {
+
               var messages = evt.data.split('\n');
               for (var i = 0; i < messages.length; i++) {
-                  console.dir(messages[i]);
+
+                //  if ()
+                  //console.dir(messages[i]);
                   var curr = JSON.parse(messages[i]);
-                  console.dir(curr);
+
+                  //console.dir(curr);
+
+                  var temp;
                     for(var ting in curr)
                     {
+                      temp = curr[ting];
+// gonn check if temp is a remote address string with some regex and set
+//a variable to know which client we are.
+                      var regEx = new RegExp('\[::\d\]:\d*');
+                      if (regEx.test(temp)){
+                        remoteAddress = temp;
+                        console.log(remoteAddress);
+                      }
 
-                      drawPlayerMark(curr[ting].X, curr[ting].Y);
+                      if (!myMap.has(temp.Address)) {
+                        myMap.set(temp.Address, temp);
+                        addPlayer(temp.X, temp.Y, temp.Address);
+                      }
+                      else {
+                        var t = myMap.get(temp.Address);
+                        //console.dir(t);
+
+
+                        myMap.set(temp.address, t);
+                      }
+
+                      //drawPlayerMark(curr[ting].X, curr[ting].Y);
                     }
 
               }
@@ -40,6 +75,7 @@
           append(item);
       }
   };
+
 var createPlayer = function(x,y) {
   // The player and its settings
   player.push(game.physics.add.sprite(x, y, 'dude'));
@@ -48,6 +84,7 @@ var createPlayer = function(x,y) {
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
 };
+
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -75,7 +112,9 @@ var plyr = {"name":"",
             "flipY":false,
             "rotation":0,
             "visible":true,
-            "textureKey":"dude"};
+            "textureKey":"dude",
+            "velocityX": 0.0,
+            "velocityY": 0.0};
 
 var player;
 var stars;
@@ -156,19 +195,22 @@ function create ()
     });
 
     stars.children.iterate(function (child) {
-
         //  Give each star a slightly different bounce
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
 
     });
 
-    bombs = this.physics.add.group();
 
+//groups and stuff;
+    myMap = new Map();
+    bombs = this.physics.add.group();
+    others = this.physics.add.group();
     //  The score
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
+    this.physics.add.collider(others, platforms);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(bombs, platforms);
 
@@ -190,36 +232,40 @@ function update ()
         player.setVelocityX(-160);
 
         player.anims.play('left', true);
+        var mm = JSON.stringify(player);
+        conn.send(mm);
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
 
         player.anims.play('right', true);
+        var mm = JSON.stringify(player);
+        conn.send(mm);
     }
     else
     {
         player.setVelocityX(0);
 
         player.anims.play('turn');
+
     }
 
     if (cursors.up.isDown && player.body.touching.down)
     {
         player.setVelocityY(-330);
-        var stuff = player.x;
 
         var mm = JSON.stringify(player);
-        console.dir(mm);
         conn.send(mm);
     }
 }
 
 function drawPlayerMark (x,y)
 {
-  console.log("x: ", x, " y: ", y);
-  graphics.fillStyle(0xFFFFFF, 1.0);
-  graphics.fillRect(x, y, 16, 16);
+  // console.log("x: ", x, " y: ", y);
+  // graphics.fillStyle(0xFFFFFF, 1.0);
+  // graphics.fillRect(x, y, 16, 16);
+
 }
 
 function collectStar (player, star)
@@ -235,7 +281,7 @@ function collectStar (player, star)
         //  A new batch of stars to collect
         stars.children.iterate(function (child) {
 
-            child.enableBody(true, child.x, 0, true, true);
+          child.enableBody(true, child.x, 0, true, true);
 
         });
 
@@ -248,6 +294,14 @@ function collectStar (player, star)
         bomb.allowGravity = false;
 
     }
+}
+
+function addPlayer(x,y,address)
+{
+  var plyr = others.create(x,y,'dude');
+  plyr.Name = address;
+  plyr.setBounce(1);
+  plyr.setCollideWorldBounds(true);
 }
 
 function hitBomb (player, bomb)

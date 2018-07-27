@@ -39,6 +39,7 @@ func (h *Hub) run() {
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
+				delete(plyrs, client.conn.RemoteAddr().String())
 				close(client.send)
 			}
 		case message := <-h.broadcast:
