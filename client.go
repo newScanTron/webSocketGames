@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -41,6 +42,7 @@ type Plyr struct {
 	Name       string
 	X          float32
 	Y          float32
+	Z          float32
 	VelocityX  float32
 	VelocityY  float32
 	Depth      int
@@ -55,6 +57,7 @@ type Players struct {
 }
 
 var plyrs map[string]Plyr
+var mutex = &sync.Mutex{}
 
 // var plyrs = new(Players)
 
@@ -87,19 +90,21 @@ func (c *Client) readPump() {
 	raJson := struct{ Address string }{c.conn.RemoteAddr().String()}
 	raString, err := json.Marshal(raJson)
 	c.conn.WriteMessage(websocket.TextMessage, []byte(raString))
-	println(ra)
-
+	// println(ra)
 	var m Plyr
 	_, message, err := c.conn.ReadMessage()
 	// and call json.Unmarshal, passing it a []byte of JSON data and a pointer to m
+
+	//println("message: ", string(message))
 	_ = json.Unmarshal(message, &m)
 
+	//println("m.Address: ", m.Name)
 	//this is where we shall do the calculations we wantto do server side.
 	m.Address = c.conn.RemoteAddr().String()
 
-	// append works on nil slices.
+	mutex.Lock()
 	plyrs[m.Address] = m
-	// b, err := json.Marshal(m)
+	mutex.Unlock()
 
 	for {
 		_, message, err = c.conn.ReadMessage()
@@ -113,16 +118,24 @@ func (c *Client) readPump() {
 		// and call json.Unmarshal, passing it a []byte of JSON data and a pointer to m
 		err = json.Unmarshal(message, &m)
 
-		//this is where we shall do the calculations we wantto do server side.
+		// this is where we shall do the calculations we wantto do server side.
+		//	println(string(message))
+		// println("velocity : ", m.VelocityX)
+
+		mutex.Lock()
 
 		mm := plyrs[ra]
 		mm.X = m.X
 		mm.Y = m.Y
+		mm.VelocityX = m.VelocityX
+		mm.VelocityY = m.VelocityY
 		plyrs[ra] = mm
 
 		b, err := json.Marshal(plyrs)
-		println(string(b))
+		mutex.Unlock()
+
 		if err != nil {
+			println(err.Error())
 		}
 		c.hub.broadcast <- string(b)
 

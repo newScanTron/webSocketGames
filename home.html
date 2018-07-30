@@ -27,7 +27,7 @@
           };
           conn.onopen = function(evt) {
 
-
+            myMap = new Map();
           };
           conn.onmessage = function (evt) {
 
@@ -39,29 +39,37 @@
                   var curr = JSON.parse(messages[i]);
 
                   //console.dir(curr);
+                  if (!remoteAddress)
+                  {
+                    checkRemoteAddress(curr.Address);
+
+                  }
+
 
                   var temp;
+
                     for(var ting in curr)
                     {
                       temp = curr[ting];
+                      console.dir(curr[ting]);
 // gonn check if temp is a remote address string with some regex and set
-//a variable to know which client we are.
-                      var regEx = new RegExp('\[::\d\]:\d*');
-                      if (regEx.test(temp)){
-                        remoteAddress = temp;
-                        console.log(remoteAddress);
-                      }
+//a variable to know which client we are. checkRemoteAddress does that and
+//assigines a global variable to that value.
 
-                      if (!myMap.has(temp.Address)) {
+                      if (!myMap.has(temp.Address) && game) {
                         myMap.set(temp.Address, temp);
                         addPlayer(temp.X, temp.Y, temp.Address);
                       }
                       else {
-                        var t = myMap.get(temp.Address);
-                        //console.dir(t);
-
-
-                        myMap.set(temp.address, t);
+                        myMap.get(temp.Address).VelocityX = temp.VelocityX;
+                        myMap.get(temp.address).VelocityY = temp.VelocityY;
+                        others.getChildren().forEach( function(item){
+                          if (item.name == temp.Address && temp.Address != remoteAddress){
+                            item.setVelocity(temp.VelocityX, temp.VelocityY);
+                            console.dir(temp);
+                            console.dir(item);
+                          }
+                        });
                       }
 
                       //drawPlayerMark(curr[ting].X, curr[ting].Y);
@@ -75,6 +83,14 @@
           append(item);
       }
   };
+
+var checkRemoteAddress = function(str) {
+  var regEx = new RegExp('\[::\d\]:\d*');
+  if (regEx.test(str)){
+    remoteAddress = str;
+    console.log(remoteAddress);
+  }
+}
 
 var createPlayer = function(x,y) {
   // The player and its settings
@@ -104,17 +120,18 @@ var config = {
     }
 };
 //{"name":"","type":"Sprite","x":214.66666666666654,"y":512,"depth":0,"scale":{"x":1,"y":1},"origin":{"x":0.5,"y":0.5},"flipX":false,"flipY":false,"rotation":0,"alpha":1,"visible":true,"scaleMode":0,"blendMode":0,"textureKey":"dude","frameKey":4,"data":{}}
-var plyr = {"name":"",
-            "x":0.0,
-            "y":0.0,
-            "depth":0,
-            "flipX":false,
-            "flipY":false,
-            "rotation":0,
-            "visible":true,
-            "textureKey":"dude",
-            "velocityX": 0.0,
-            "velocityY": 0.0};
+var plyr = {name:"",
+            x:0.0,
+            y:0.0,
+            z:0,
+            depth:0,
+            flipX:false,
+            flipY:false,
+            rotation:0,
+            visible:true,
+            textureKey:"dude",
+            VelocityX: 0.0,
+            VelocityY: 0.0};
 
 var player;
 var stars;
@@ -126,7 +143,7 @@ var gameOver = false;
 var scoreText;
 
 var graphics;
-
+var plyr1;
 var game = new Phaser.Game(config);
 
 function preload ()
@@ -158,10 +175,11 @@ function create ()
 
     // The player and its settings
     player = this.physics.add.sprite(100, 450, 'dude');
-
     //  Player physics properties. Give the little guy a slight bounce.
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
+
+
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
@@ -202,7 +220,7 @@ function create ()
 
 
 //groups and stuff;
-    myMap = new Map();
+
     bombs = this.physics.add.group();
     others = this.physics.add.group();
     //  The score
@@ -220,6 +238,23 @@ function create ()
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 }
 
+function sendMessageHelper(player) {
+  setMessagePlayerObject(player);
+  var mm = JSON.stringify(plyr);
+ //console.log("im astring of mm: " + mm);
+  conn.send(mm);
+}
+
+function setMessagePlayerObject(pl) {
+  plyr.name = remoteAddress;
+  plyr.x = pl.x;
+  plyr.y = pl.y;
+  plyr.z = pl.z;
+  plyr.VelocityX = pl.body.velocity.x;
+  plyr.VelocityY = pl.body.velocity.y;
+
+}
+
 function update ()
 {
     if (gameOver)
@@ -230,34 +265,24 @@ function update ()
     if (cursors.left.isDown)
     {
         player.setVelocityX(-160);
-
         player.anims.play('left', true);
-        var mm = JSON.stringify(player);
-        conn.send(mm);
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
-
         player.anims.play('right', true);
-        var mm = JSON.stringify(player);
-        conn.send(mm);
     }
     else
     {
         player.setVelocityX(0);
-
         player.anims.play('turn');
-
     }
 
     if (cursors.up.isDown && player.body.touching.down)
     {
         player.setVelocityY(-330);
-
-        var mm = JSON.stringify(player);
-        conn.send(mm);
     }
+    if (remoteAddress) sendMessageHelper(player);
 }
 
 function drawPlayerMark (x,y)
@@ -298,10 +323,15 @@ function collectStar (player, star)
 
 function addPlayer(x,y,address)
 {
-  var plyr = others.create(x,y,'dude');
-  plyr.Name = address;
-  plyr.setBounce(1);
-  plyr.setCollideWorldBounds(true);
+  if (others) {
+
+    var plyr = others.create(x,y,'dude');
+    console.dir(plyr);
+    plyr.name = address;
+
+    plyr.setBounce(1);
+    plyr.setCollideWorldBounds(true);
+  }
 }
 
 function hitBomb (player, bomb)

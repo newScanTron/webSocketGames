@@ -22,6 +22,7 @@ type Hub struct {
 
 func newHub() *Hub {
 	plyrs = make(map[string]Plyr)
+
 	// m = make(map[string]int)
 	return &Hub{
 		broadcast:  make(chan string),
