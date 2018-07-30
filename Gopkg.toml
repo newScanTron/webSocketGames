@@ -23,6 +23,12 @@
 #   non-go = false
 #   go-tests = true
 #   unused-packages = true
+[metadata.scalingo]
+  root-package = "github.com/newScanTron/webSocketGame"
+  go-version = "go1.10.0"
+  install = [ "./..." ]
+
+
 
 
 [[constraint]]
