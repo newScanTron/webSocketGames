@@ -38,7 +38,7 @@ func main() {
 
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/", http.StripPrefix("/static/", fs))
-
+	println("about to listen and server")
 	err := http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
