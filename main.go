@@ -8,6 +8,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
@@ -39,8 +40,11 @@ func main() {
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/", http.StripPrefix("/static/", fs))
 	println("about to listen and server")
-	println(addr)
-	err := http.ListenAndServe(*addr, nil)
+	port := "3000"
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
