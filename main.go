@@ -26,6 +26,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	println("we in main")
 	flag.Parse()
 	hub := newHub()
 	go hub.run()
