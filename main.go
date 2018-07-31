@@ -43,4 +43,5 @@ func main() {
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+	println("not sure whats not starting")
 }
