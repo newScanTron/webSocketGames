@@ -51,7 +51,7 @@
                     for(var ting in curr)
                     {
                       temp = curr[ting];
-                      console.dir(curr[ting]);
+                    //  console.dir(curr[ting]);
 // gonn check if temp is a remote address string with some regex and set
 //a variable to know which client we are. checkRemoteAddress does that and
 //assigines a global variable to that value.
@@ -86,6 +86,7 @@
 
 var checkRemoteAddress = function(str) {
   var regEx = new RegExp('\[::\d\]:\d*');
+  var regEx = /\S.*:\d*/
   if (regEx.test(str)){
     remoteAddress = str;
     console.log(remoteAddress);
