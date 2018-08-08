@@ -15,23 +15,40 @@ var addr = flag.String("addr", ":8080", "http service address")
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	//log.Println(r.URL)
-	if r.URL.Path != "/home/" {
-		http.Error(w, "Not found", http.StatusNotFound)
-		return
-	}
+
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	http.ServeFile(w, r, "home.html")
+
+	switch os := r.URL.Path; os {
+	case "/mmo/":
+		http.ServeFile(w, r, "mmo.html")
+	case "/home/":
+		http.ServeFile(w, r, "home.html")
+	case "/drawPlatformer/":
+		http.ServeFile(w, r, "./drawing-platformer/index.html")
+	case "/dungeon/":
+		http.ServeFile(w, r, "./dungeon/index.html")
+	default:
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
 }
 
+func serveMMO(w http.ResponseWriter, r *http.Request) {
+
+}
 func main() {
 	println("we in main")
 	flag.Parse()
 	hub := newHub()
 	go hub.run()
 	http.HandleFunc("/home/", serveHome)
+	http.HandleFunc("/mmo/", serveHome)
+	http.HandleFunc("/drawPlatformer/", serveHome)
+	http.HandleFunc("/dungeon/", serveHome)
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)

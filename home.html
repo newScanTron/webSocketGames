@@ -63,11 +63,12 @@
                       else {
                         myMap.get(temp.Address).VelocityX = temp.VelocityX;
                         myMap.get(temp.address).VelocityY = temp.VelocityY;
+
                         others.getChildren().forEach( function(item){
                           if (item.name == temp.Address && temp.Address != remoteAddress){
                             item.setVelocity(temp.VelocityX, temp.VelocityY);
-                            console.dir(temp);
-                            console.dir(item);
+                            // console.dir(temp);
+                            // console.dir(item);
                           }
                         });
                       }
