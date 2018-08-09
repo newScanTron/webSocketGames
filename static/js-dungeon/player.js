@@ -5,13 +5,15 @@ export default class Player {
     const anims = scene.anims;
     anims.create({
       key: "player-walk",
-      frames: anims.generateFrameNumbers("characters", { start: 46, end: 49 }),
+      frames: anims.generateFrameNumbers("characters", { start: 25, end: 28 }),
+      // frames: anims.generateFrameNumbers("characters", { start: 46, end: 49 }),
       frameRate: 8,
       repeat: -1
     });
     anims.create({
       key: "player-walk-back",
-      frames: anims.generateFrameNumbers("characters", { start: 65, end: 68 }),
+      frames: anims.generateFrameNumbers("characters", { start: 41, end: 45 }),
+      // frames: anims.generateFrameNumbers("characters", { start: 65, end: 68 }),
       frameRate: 8,
       repeat: -1
     });
@@ -59,16 +61,17 @@ export default class Player {
     sprite.body.velocity.normalize().scale(speed);
 
     // Update the animation last and give left/right animations precedence over up/down animations
-    if (keys.left.isDown || keys.right.isDown || keys.down.isDown) {
-      sprite.anims.play("player-walk", true);
-    } else if (keys.up.isDown) {
+    if (keys.up.isDown) {
       sprite.anims.play("player-walk-back", true);
-    } else {
+    }
+    else if (keys.left.isDown || keys.right.isDown || keys.down.isDown) {
+      sprite.anims.play("player-walk", true);
+    }   else {
       sprite.anims.stop();
 
       // If we were moving, pick and idle frame to use
-      if (prevVelocity.y < 0) sprite.setTexture("characters", 65);
-      else sprite.setTexture("characters", 46);
+      if (prevVelocity.y < 0) sprite.setTexture("characters", 33);
+      else sprite.setTexture("characters", 24);
     }
   }
 
