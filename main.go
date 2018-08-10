@@ -40,7 +40,12 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 func serveMMO(w http.ResponseWriter, r *http.Request) {
 
 }
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "favicon.ico")
+}
+
 func main() {
+	http.HandleFunc("/favicon.ico", faviconHandler)
 	println("we in main")
 	flag.Parse()
 	hub := newHub()
