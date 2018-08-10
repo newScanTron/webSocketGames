@@ -175,6 +175,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 exports.debugRoomGrid = debugRoomGrid;
 exports.debugHtmlMap = debugHtmlMap;
 exports.debugMap = debugMap;
+//exports.mapString = mapString;
 
 var _tiles = __webpack_require__(3);
 
@@ -247,8 +248,15 @@ function debugHtmlMap(dungeon) {
   var htmlString = "<pre " + attributesToHtmlString(c.containerAttributes) + "><table><tbody>" + tilesHtml + "</tbody></table></pre>";
   var htmlFragment = document.createRange().createContextualFragment(htmlString);
 
-  return htmlFragment;
+  //return htmlFragment;
+	var div = document.createElement('div');
+	div.appendChild( htmlFragment.cloneNode(true) );
+
+// your document fragment to a string (w/ html)! (yay!)
+	var html = div.innerHTML;
+	return html;
 }
+
 
 // Debug by returning a colored(!) table string where each tile in the map is represented with an
 // ASCII string
@@ -299,6 +307,7 @@ function debugMap(dungeon) {
     string += "\n";
   }
   (_console = console).log.apply(_console, [string].concat(styles));
+
 }
 
 /***/ }),
@@ -1573,8 +1582,9 @@ var Dungeon = function () {
     key: "drawToConsole",
     value: function drawToConsole(config) {
       (0, _debug.debugMap)(this, config);
+      //return _mapString(this);
     }
-  }, {
+  },  {
     key: "drawToHtml",
     value: function drawToHtml(config) {
       return (0, _debug.debugHtmlMap)(this, config);
