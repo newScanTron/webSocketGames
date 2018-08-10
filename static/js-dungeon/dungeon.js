@@ -175,6 +175,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 exports.debugRoomGrid = debugRoomGrid;
 exports.debugHtmlMap = debugHtmlMap;
 exports.debugMap = debugMap;
+exports.stringMap = stringMap;
 //exports.mapString = mapString;
 
 var _tiles = __webpack_require__(3);
@@ -192,6 +193,34 @@ var attributesToHtmlString = function attributesToHtmlString(attrObj) {
     return key + "=\"" + val + "\"";
   }).join(" ");
 };
+
+function stringMap(dungeon) {
+	var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+	config = Object.assign({}, {
+		empty: " ",
+		emptyAttributes: { class: "dungeon__empty" },
+		wall: "#",
+		wallAttributes: { class: "dungeon__wall" },
+		floor: "_",
+		floorAttributes: { class: "dungeon__wall" },
+		door: ".",
+		doorAttributes: { class: "dungeon__door" },
+		containerAttributes: { class: "dungeon" }
+	}, config);
+
+	var c = config;
+	var tiles = dungeon.getMappedTiles({
+		empty: "" + c.empty + "",
+		floor: "" + c.floor + "",
+		door: "" + c.door + "",
+		wall: "" + c.wall + ""
+	});
+	var tilesHtml = tiles.map(function (row) {
+    return "" + row.join("") + "" + row.join("") + "\n";
+  }).join("");
+	return tilesHtml;
+}
 
 // Debug by dumping a table to the console where each element in the map is the number of rooms in
 // that location
@@ -1584,7 +1613,12 @@ var Dungeon = function () {
       (0, _debug.debugMap)(this, config);
       //return _mapString(this);
     }
-  },  {
+  }, {
+    key: "drawMiniMap",
+    value: function drawMiniMap(config) {
+      return (0, _debug.stringMap)(this, config);
+    }
+  }, {
     key: "drawToHtml",
     value: function drawToHtml(config) {
       return (0, _debug.debugHtmlMap)(this, config);

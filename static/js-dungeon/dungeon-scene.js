@@ -45,8 +45,8 @@ export default class DungeonScene extends Phaser.Scene {
     });
 
     //var temp = this.dungeon.drawToConsole();
-    var tp = this.dungeon.drawToHtml();
-    console.log(tp);
+    var tp = this.dungeon.drawMiniMap();
+
     //console.dir(temp);
     // Creating a blank tilemap with dimensions matching the dungeon
     const map = this.make.tilemap({
@@ -173,10 +173,10 @@ export default class DungeonScene extends Phaser.Scene {
     // Help text that has a "fixed" position on the screen
     this.add
       .text(16, 16, `Find the stairs. Go deeper.\nCurrent level: ${tp}`, {
-        font: "18px monospace",
+        font: "4px monospace",
         fill: "#000000",
         padding: { x: 20, y: 10 },
-        backgroundColor: "#ffffff"
+        backgroundColor: "rgba(255,255,255,0.5)"
       })
       .setScrollFactor(0);
   }
