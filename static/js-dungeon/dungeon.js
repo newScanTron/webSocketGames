@@ -211,13 +211,13 @@ function stringMap(dungeon) {
 
 	var c = config;
 	var tiles = dungeon.getMappedTiles({
-		empty: "" + c.empty + "",
-		floor: "" + c.floor + "",
-		door: "" + c.door + "",
-		wall: "" + c.wall + ""
+		empty: "" + c.empty + "" + c.empty + "",
+		floor: "" + c.floor + "" + c.floor + "",
+		door: "" + c.door + "" + c.door + "",
+		wall: "" + c.wall + "" + c.wall + ""
 	});
 	var tilesHtml = tiles.map(function (row) {
-    return "" + row.join("") + "" + row.join("") + "\n";
+    return "" + row.join("") + "\n";
   }).join("");
 	return tilesHtml;
 }
@@ -1613,12 +1613,13 @@ var Dungeon = function () {
       (0, _debug.debugMap)(this, config);
       //return _mapString(this);
     }
-  }, {
+  },  {
     key: "drawMiniMap",
     value: function drawMiniMap(config) {
       return (0, _debug.stringMap)(this, config);
     }
   }, {
+  },  {
     key: "drawToHtml",
     value: function drawToHtml(config) {
       return (0, _debug.debugHtmlMap)(this, config);

@@ -8,7 +8,7 @@ import TilemapVisibility from "./tilemap-visibility.js";
  */
 export default class DungeonScene extends Phaser.Scene {
   constructor() {
-    super();
+    super('GameScene');
     this.level = 0;
   }
 
@@ -171,14 +171,15 @@ export default class DungeonScene extends Phaser.Scene {
     camera.startFollow(this.player.sprite);
 
     // Help text that has a "fixed" position on the screen
-    this.add
-      .text(16, 16, `Find the stairs. Go deeper.\nCurrent level: ${tp}`, {
-        font: "4px monospace",
-        fill: "#000000",
-        padding: { x: 20, y: 10 },
-        backgroundColor: "rgba(255,255,255,0.5)"
-      })
-      .setScrollFactor(0);
+    // this.add
+    //   .text(16, 16, `Find the stairs. Go deeper.\nCurrent level: ${tp}`, {
+    //     font: "4px monospace",
+    //     fill: "#000000",
+    //     padding: { x: 20, y: 10 },
+    //     backgroundColor: "rgba(255,255,255,0.5)"
+    //   })
+    //   .setScrollFactor(0);
+    this.events.emit('dungeonBuilt', this.dungeon);
   }
 
   update(time, delta) {
