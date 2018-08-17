@@ -17,6 +17,21 @@ export default class TilemapVisibility {
     }
   }
 
+  setActiveArea(plyr) {
+    this.setActiveAlpha(plyr, 0);
+  }
+
+  setActiveAlpha(plyr, alpha) {
+    this.shadowLayer.forEachTile(
+      t => (t.alpha = alpha),
+      this,
+      plyr.sprite.x- 2,
+      plyr.sprite.y-2,
+      4,
+      4
+    );
+  }
+
   // Helper to set the alpha on all tiles within a room
   setRoomAlpha(room, alpha) {
     this.shadowLayer.forEachTile(

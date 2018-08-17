@@ -7,7 +7,7 @@ import TilemapVisibility from "./tilemap-visibility.js";
  * Scene that generates a new dungeon
  */
 export default class UiScene extends Phaser.Scene {
-  isVisi = false;
+
   constructor() {
     super({key: 'UiScene', active: true});
   }
@@ -30,19 +30,25 @@ export default class UiScene extends Phaser.Scene {
     //  Grab a reference to the Game Scene
     var tp;
     let ourGame = this.scene.get('GameScene');
+    var text = this.add
+    .text(16, 16, `Find the stairs. Go deeper.\nCurrent level: mm`, {
+      font: "4px monospace",
+      fill: "#000000",
+      padding: { x: 20, y: 10 },
+      backgroundColor: "rgba(255,255,255,0.5)"
+    })
+    .setScrollFactor(0);
     ourGame.events.on('dungeonBuilt', function(dungeon){
+
       tp = dungeon.drawMiniMap();
-      this.add
-      .text(16, 16, `Find the stairs. Go deeper.\nCurrent level: ${tp}`, {
-        font: "4px monospace",
-        fill: "#000000",
-        padding: { x: 20, y: 10 },
-        backgroundColor: "rgba(255,255,255,0.5)"
-      })
-      .setScrollFactor(0);
+      console.log("what up");
+      text.setText(`${tp}`);
+
 
     }, this);
-    // Help text that has a "fixed" position on the screen
+    ourGame.events.on('restart', function(){
+      //this.scene.restart();
+    },this);    // Help text that has a "fixed" position on the screen
   }
 
 }

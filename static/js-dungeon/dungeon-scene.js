@@ -7,6 +7,7 @@ import TilemapVisibility from "./tilemap-visibility.js";
  * Scene that generates a new dungeon
  */
 export default class DungeonScene extends Phaser.Scene {
+
   constructor() {
     super('GameScene');
     this.level = 0;
@@ -43,9 +44,10 @@ export default class DungeonScene extends Phaser.Scene {
         height: { min: 7, max: 25, onlyOdd: true }
       }
     });
+    this.events.emit('dungeonBuilt', this.dungeon);
 
     //var temp = this.dungeon.drawToConsole();
-    var tp = this.dungeon.drawMiniMap();
+    //var tp = this.dungeon.drawMiniMap();
 
     //console.dir(temp);
     // Creating a blank tilemap with dimensions matching the dungeon
@@ -55,10 +57,18 @@ export default class DungeonScene extends Phaser.Scene {
       width: this.dungeon.width,
       height: this.dungeon.height
     });
+
+
+
     const tileset = map.addTilesetImage("tiles", null, 48, 48, 1, 2); // 1px margin, 2px spacing
-    this.groundLayer = map.createBlankDynamicLayer("Ground", tileset).fill(TILES.BLANK);
+    this.groundLayer = map.createBlankDynamicLayer("Ground", tileset).fill(TILES.TOP_OF_WALL);
     this.stuffLayer = map.createBlankDynamicLayer("Stuff", tileset);
+    this.aboveLayer = map.createBlankDynamicLayer("Above", tileset);
+//needed to change layers so this displays above the player.
+    this.aboveLayer.setDepth(10);
+    this.stuffLayer.setDepth(9);
     const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset).fill(TILES.BLANK);
+    shadowLayer.setDepth(11);
 
     this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 
@@ -125,13 +135,27 @@ export default class DungeonScene extends Phaser.Scene {
       } else {
         // 25% of either 2 or 4 towers, depending on the room size
         if (room.height >= 9) {
-          this.stuffLayer.putTilesAt(TILES.TOWER, room.centerX - 1, room.centerY + 1);
-          this.stuffLayer.putTilesAt(TILES.TOWER, room.centerX + 1, room.centerY + 1);
-          this.stuffLayer.putTilesAt(TILES.TOWER, room.centerX - 1, room.centerY - 2);
-          this.stuffLayer.putTilesAt(TILES.TOWER, room.centerX + 1, room.centerY - 2);
+//Top Left
+          this.aboveLayer.putTileAt(TILES.TOWER.TOP, room.centerX - 1, room.centerY+1);
+          this.stuffLayer.weightedRandomize(room.centerX - 1, room.centerY+2,1,1, TILES.TOWER.FACE);
+//Top Right
+          this.aboveLayer.putTileAt(TILES.TOWER.TOP, room.centerX + 1, room.centerY+1);
+          this.stuffLayer.weightedRandomize(room.centerX + 1, room.centerY+2,1,1, TILES.TOWER.FACE);
+//Bottom Left
+          this.aboveLayer.putTileAt(TILES.TOWER.TOP, room.centerX - 1, room.centerY-2);
+          this.stuffLayer.weightedRandomize(room.centerX - 1, room.centerY-1,1,1, TILES.TOWER.FACE);
+//Bottom Right
+          this.aboveLayer.putTileAt(TILES.TOWER.TOP, room.centerX + 1, room.centerY-2);
+          this.stuffLayer.weightedRandomize(room.centerX + 1, room.centerY-1,1,1, TILES.TOWER.FACE);
+
+
+
         } else {
-          this.stuffLayer.putTilesAt(TILES.TOWER, room.centerX - 1, room.centerY - 1);
-          this.stuffLayer.putTilesAt(TILES.TOWER, room.centerX + 1, room.centerY - 1);
+          this.stuffLayer.putTileAt(TILES.TOWER.TOP, room.centerX - 1, room.centerY-1);
+          this.stuffLayer.weightedRandomize(room.centerX - 1, room.centerY,1,1, TILES.TOWER.FACE);
+
+          this.stuffLayer.putTileAt(TILES.TOWER.TOP, room.centerX + 1, room.centerY-1);
+          this.stuffLayer.weightedRandomize(room.centerX + 1, room.centerY,1,1, TILES.TOWER.FACE);
         }
       }
     });
@@ -150,6 +174,7 @@ export default class DungeonScene extends Phaser.Scene {
       cam.once("camerafadeoutcomplete", () => {
         this.player.destroy();
         this.scene.restart();
+        this.events.emit('restart');
       });
     });
 
@@ -179,7 +204,6 @@ export default class DungeonScene extends Phaser.Scene {
     //     backgroundColor: "rgba(255,255,255,0.5)"
     //   })
     //   .setScrollFactor(0);
-    this.events.emit('dungeonBuilt', this.dungeon);
   }
 
   update(time, delta) {
@@ -193,6 +217,8 @@ export default class DungeonScene extends Phaser.Scene {
     const playerTileY = this.groundLayer.worldToTileY(this.player.sprite.y);
     const playerRoom = this.dungeon.getRoomAt(playerTileX, playerTileY);
 
-    this.tilemapVisibility.setActiveRoom(playerRoom);
+    // this.tilemapVisibility.setActiveRoom(playerRoom);
+    this.tilemapVisibility.setActiveArea(this.player);
+
   }
 }
