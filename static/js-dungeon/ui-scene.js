@@ -7,7 +7,7 @@ import TilemapVisibility from "./tilemap-visibility.js";
  * Scene that generates a new dungeon
  */
 export default class UiScene extends Phaser.Scene {
-  isVisi = false;
+  var isVisi = false;
   constructor() {
     super({key: 'UiScene', active: true});
   }

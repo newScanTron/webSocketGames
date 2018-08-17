@@ -14,7 +14,7 @@ export default class TilemapVisibility {
       this.setRoomAlpha(room, 0); // Make the new room visible
       if (this.activeRoom) this.setRoomAlpha(this.activeRoom, 0.5); // Dim the old room
       this.activeRoom = room;
-    }
+    } 
   }
 
   // Helper to set the alpha on all tiles within a room
