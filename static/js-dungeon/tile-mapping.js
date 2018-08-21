@@ -4,6 +4,7 @@
 // - Array or 2D array for putTilesAt
 const TILE_MAPPING = {
   BLANK: 20,
+  TOP_OF_WALL: 17,
   WALL: {
     TOP_LEFT: 3,
     TOP_RIGHT: 4,
@@ -20,25 +21,25 @@ const TILE_MAPPING = {
     TOP: [40, 6, 38],
     // prettier-ignore
     LEFT: [
-      [40], 
-      [6], 
+      [40],
+      [6],
       [2]
     ],
     BOTTOM: [2, 6, 0],
     // prettier-ignore
     RIGHT: [
-      [38], 
-      [6], 
+      [38],
+      [6],
       [0]
     ]
   },
   CHEST: 166,
   STAIRS: 81,
   // prettier-ignore
-  TOWER: [
-    [186],
-    [205]
-  ]
+  TOWER: {
+    TOP: 186,
+    FACE: [{ index: [205,206,207], weight: 1 }]
+  }
 };
 
 export default TILE_MAPPING;
