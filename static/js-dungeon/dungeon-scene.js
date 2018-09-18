@@ -66,7 +66,7 @@ export default class DungeonScene extends Phaser.Scene {
     this.aboveLayer = map.createBlankDynamicLayer("Above", tileset);
 //needed to change layers so this displays above the player.
     this.aboveLayer.setDepth(10);
-    this.stuffLayer.setDepth(9);
+    //this.stuffLayer.setDepth(9);
     const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset).fill(TILES.BLANK);
     shadowLayer.setDepth(11);
 
@@ -131,7 +131,7 @@ export default class DungeonScene extends Phaser.Scene {
         // 50% chance of a pot anywhere in the room... except don't block a door!
         const x = Phaser.Math.Between(room.left + 2, room.right - 2);
         const y = Phaser.Math.Between(room.top + 2, room.bottom - 2);
-        this.stuffLayer.weightedRandomize(x, y, 1, 1, TILES.POT);
+        this.stuffLayer.weightedRandomize(x, y, 1, 1, TILES.VASE);
       } else {
         // 25% of either 2 or 4 towers, depending on the room size
         if (room.height >= 9) {
@@ -147,8 +147,6 @@ export default class DungeonScene extends Phaser.Scene {
 //Bottom Right
           this.aboveLayer.putTileAt(TILES.TOWER.TOP, room.centerX + 1, room.centerY-2);
           this.stuffLayer.weightedRandomize(room.centerX + 1, room.centerY-1,1,1, TILES.TOWER.FACE);
-
-
 
         } else {
           this.stuffLayer.putTileAt(TILES.TOWER.TOP, room.centerX - 1, room.centerY-1);
@@ -217,7 +215,7 @@ export default class DungeonScene extends Phaser.Scene {
     const playerTileY = this.groundLayer.worldToTileY(this.player.sprite.y);
     const playerRoom = this.dungeon.getRoomAt(playerTileX, playerTileY);
 
-    // this.tilemapVisibility.setActiveRoom(playerRoom);
+     // this.tilemapVisibility.setActiveRoom(playerRoom);
     this.tilemapVisibility.setActiveArea(this.player);
 
   }

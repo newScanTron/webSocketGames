@@ -14,7 +14,7 @@ export default class TilemapVisibility {
       this.setRoomAlpha(room, 0); // Make the new room visible
       if (this.activeRoom) this.setRoomAlpha(this.activeRoom, 0.5); // Dim the old room
       this.activeRoom = room;
-    } 
+    }
   }
 
   setActiveArea(plyr) {
@@ -27,8 +27,8 @@ export default class TilemapVisibility {
       this,
       plyr.sprite.x- 2,
       plyr.sprite.y-2,
-      4,
-      4
+      128,
+      128
     );
   }
 
