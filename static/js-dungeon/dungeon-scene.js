@@ -6,6 +6,17 @@ import TilemapVisibility from "./tilemap-visibility.js";
 /**
  * Scene that generates a new dungeon
  */
+ var Light = illuminated.Light
+ , Lamp = illuminated.Lamp
+ , Vec2 = illuminated.Vec2
+ , OpaqueObject = illuminated.OpaqueObject
+ , PolygonObject = illuminated.PolygonObject
+ , DiscObject = illuminated.DiscObject
+ , RectangleObject = illuminated.RectangleObject
+ , Lighting = illuminated.Lighting
+ , DarkMask = illuminated.DarkMask
+ ;
+
 export default class DungeonScene extends Phaser.Scene {
 
   constructor() {
@@ -30,6 +41,7 @@ export default class DungeonScene extends Phaser.Scene {
   create() {
     this.level++;
     this.hasPlayerReachedStairs = false;
+
 
     // Generate a random world with a few extra options:
     //  - Rooms should only have odd number dimensions so that they have a center tile.
