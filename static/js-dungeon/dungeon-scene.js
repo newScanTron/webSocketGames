@@ -17,6 +17,9 @@ import TilemapVisibility from "./tilemap-visibility.js";
  , DarkMask = illuminated.DarkMask
  ;
 
+var map;
+var shadowLayer;
+
 export default class DungeonScene extends Phaser.Scene {
 
   constructor() {
@@ -63,7 +66,7 @@ export default class DungeonScene extends Phaser.Scene {
 
     //console.dir(temp);
     // Creating a blank tilemap with dimensions matching the dungeon
-    const map = this.make.tilemap({
+    map = this.make.tilemap({
       tileWidth: 48,
       tileHeight: 48,
       width: this.dungeon.width,
@@ -79,8 +82,9 @@ export default class DungeonScene extends Phaser.Scene {
 //needed to change layers so this displays above the player.
     this.aboveLayer.setDepth(10);
     //this.stuffLayer.setDepth(9);
-    const shadowLayer = map.createBlankDynamicLayer("Shadow", tileset).fill(TILES.BLANK);
+    shadowLayer = map.createBlankDynamicLayer("Shadow", tileset).fill(TILES.BLANK);
     shadowLayer.setDepth(11);
+    shadowLayer.setAlpha(0.5);
 
     this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 
@@ -227,8 +231,12 @@ export default class DungeonScene extends Phaser.Scene {
     const playerTileY = this.groundLayer.worldToTileY(this.player.sprite.y);
     const playerRoom = this.dungeon.getRoomAt(playerTileX, playerTileY);
 
-     // this.tilemapVisibility.setActiveRoom(playerRoom);
-    this.tilemapVisibility.setActiveArea(this.player);
+    // this.tilemapVisibility.setActiveRoom(playerRoom);
+    if (map) {
+      var tile = map.getTileAt(playerTileX, playerTileY);
+      this.tilemapVisibility.setActiveArea(tile, 0);
+
+    }
 
   }
 }

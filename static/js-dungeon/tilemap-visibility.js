@@ -18,15 +18,16 @@ export default class TilemapVisibility {
   }
 
   setActiveArea(plyr) {
-    this.setActiveAlpha(plyr, 0);
+    this.setActiveAlpha(plyr, 0.1);
   }
 
   setActiveAlpha(plyr, alpha) {
+
     this.shadowLayer.forEachTile(
       t => (t.alpha = alpha),
       this,
-      plyr.sprite.x- 2,
-      plyr.sprite.y-2,
+      plyr.x,
+      plyr.y,
       128,
       128
     );
