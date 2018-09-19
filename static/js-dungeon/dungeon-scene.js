@@ -74,17 +74,26 @@ export default class DungeonScene extends Phaser.Scene {
     });
 
 
-
     const tileset = map.addTilesetImage("tiles", null, 48, 48, 1, 2); // 1px margin, 2px spacing
     this.groundLayer = map.createBlankDynamicLayer("Ground", tileset).fill(TILES.TOP_OF_WALL);
     this.stuffLayer = map.createBlankDynamicLayer("Stuff", tileset);
     this.aboveLayer = map.createBlankDynamicLayer("Above", tileset);
 //needed to change layers so this displays above the player.
     this.aboveLayer.setDepth(10);
+
+    shadowMap = this.make.tilemap({
+      tileWidth: 16,
+      tileHeight: 16,
+      width: this.dungeon.width,
+      height: this.dungeon.height
+    });
+
+    const shadowTileset = shadowMap.addTilesetImage("tiles", null, 48, 48, 1, 2); // 1px margin, 2px spacing
+
     //this.stuffLayer.setDepth(9);
-    shadowLayer = map.createBlankDynamicLayer("Shadow", tileset).fill(TILES.BLANK);
+    shadowLayer = shadowMap.createBlankDynamicLayer("Shadow", tileset).fill(TILES.BLANK);
     shadowLayer.setDepth(11);
-    shadowLayer.setAlpha(0.5);
+    shadowLayer.setAlpha(0.8);
 
     this.tilemapVisibility = new TilemapVisibility(shadowLayer);
 
@@ -235,7 +244,6 @@ export default class DungeonScene extends Phaser.Scene {
     if (map) {
       var tile = map.getTileAt(playerTileX, playerTileY);
       this.tilemapVisibility.setActiveArea(tile, 0);
-
     }
 
   }
